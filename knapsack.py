@@ -1,4 +1,26 @@
-version = "1.0.0"
+version = "1.0.1"
+
+class ReproductionFailedError(Exception):
+    def __init__(self, fits, CAP, POP):
+        super().__init__(f"Population unable to reproduce.\n"
+                         f"\tAmount of sets with positive fitness is less than 2: {fits}\n"
+                         f"\tTry increasing the following values: CAP={CAP}, POP={POP}")
+
+class ValueDataTypeError(Exception):
+    def __init__(self, name, value):
+        super().__init__(f"Invalid data type.\n"
+                         f"\tValue {name}={value} must be an int.")
+
+class ValueScopeError(Exception):
+    def __init__(self, name, value):
+        super().__init__(f"Value out of scope.\n"
+                         f"\tValue {name}={value} must be in a scope 0-1.")
+
+class PopulationSizeError(Exception):
+    def __init__(self, POP):
+        super().__init__(f"Population too small.\n"
+                         f"\tPopulation size must be greater than 1.\n"
+                         f"\tIncrease the following value: POP={POP}")
 
 import random
 
@@ -27,6 +49,8 @@ def fitness(pop):
             fits.append(0)
         else:
             fits.append(total_value)
+    if sum(fits) == max(fits):
+        raise ReproductionFailedError(fits, CAP, POP)
     return fits
 
 def roulette (pop, fits):
@@ -78,6 +102,18 @@ def best(pop, fits):
     return max_val, best_sets, best_i
 
 def main():
+    if not isinstance(CAP, int):
+        raise ValueDataTypeError("CAP",CAP)
+    if not isinstance(POP, int):
+        raise ValueDataTypeError("POP",POP)
+    if not isinstance(GEN, int):
+        raise ValueDataTypeError("GEN",GEN)
+    if not (0 <= CROSS <=1):
+        raise ValueScopeError("CROSS", CROSS)
+    if not (0 <= MUT <=1):
+        raise ValueScopeError("MUT", MUT)
+    if POP < 2:
+        raise PopulationSizeError
     pop = []
     parents = []
     for i in range(POP):

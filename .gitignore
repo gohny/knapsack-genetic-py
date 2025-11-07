@@ -2,6 +2,8 @@
 *.pyd
 *.pyo
 
+test.py
+
 .venv/
 __pycache__/
 
