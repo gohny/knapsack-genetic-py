@@ -1,26 +1,36 @@
-version = "1.0.1"
+version = "1.0.2"
 
-class ReproductionFailedError(Exception):
-    def __init__(self, fits, CAP, POP):
-        super().__init__(f"Population unable to reproduce.\n"
-                         f"\tAmount of sets with positive fitness is less than 2: {fits}\n"
-                         f"\tTry increasing the following values: CAP={CAP}, POP={POP}")
+class Errors:
+    @staticmethod
+    def var_name(var):
+        vars = {"CAP":CAP, "POP":POP, "GEN":GEN, "CROSS":CROSS, "MUT":MUT}
+        for key, value in vars.items():
+            if var is value:
+                return key
 
-class ValueDataTypeError(Exception):
-    def __init__(self, name, value):
-        super().__init__(f"Invalid data type.\n"
-                         f"\tValue {name}={value} must be an int.")
+    class ReproductionFailedError(Exception):
+        def __init__(self, fits, CAP, POP):
+            super().__init__(f"Population unable to reproduce.\n"
+                             f"\tAmount of sets with positive fitness is less than 2: {fits}\n"
+                             f"\tTry increasing the following values: CAP={CAP}, POP={POP}")
 
-class ValueScopeError(Exception):
-    def __init__(self, name, value):
-        super().__init__(f"Value out of scope.\n"
-                         f"\tValue {name}={value} must be in a scope 0-1.")
+    class ValueDataTypeError(Exception):
+        def __init__(self, value):
+            name = Errors.var_name(value)
+            super().__init__(f"Invalid data type.\n"
+                             f"\tValue {name}={value} must be an int.")
 
-class PopulationSizeError(Exception):
-    def __init__(self, POP):
-        super().__init__(f"Population too small.\n"
-                         f"\tPopulation size must be greater than 1.\n"
-                         f"\tIncrease the following value: POP={POP}")
+    class ValueScopeError(Exception):
+        def __init__(self, value):
+            name = Errors.var_name(value)
+            super().__init__(f"Value out of scope.\n"
+                             f"\tValue {name}={value} must be in a scope 0-1.")
+
+    class PopulationSizeError(Exception):
+        def __init__(self, POP):
+            super().__init__(f"Population too small.\n"
+                             f"\tPopulation size must be greater than 1.\n"
+                             f"\tIncrease the following value: POP={POP}")
 
 import random
 
@@ -50,7 +60,7 @@ def fitness(pop):
         else:
             fits.append(total_value)
     if sum(fits) == max(fits):
-        raise ReproductionFailedError(fits, CAP, POP)
+        raise Errors.ReproductionFailedError(fits, CAP, POP)
     return fits
 
 def roulette (pop, fits):
@@ -93,27 +103,23 @@ def mutate(set):
 
 def best(pop, fits):
     best_sets = []
-    best_i = []
-    max_val = max(fits)
+    best_indices = []
+    best_fit = max(fits)
     for i in range(POP):
-        if fits[i] == max_val:
+        if fits[i] == best_fit:
             best_sets.append(pop[i])
-            best_i.append(i)
-    return max_val, best_sets, best_i
+            best_indices.append(i)
+    return best_fit, best_sets, best_indices
 
 def main():
-    if not isinstance(CAP, int):
-        raise ValueDataTypeError("CAP",CAP)
-    if not isinstance(POP, int):
-        raise ValueDataTypeError("POP",POP)
-    if not isinstance(GEN, int):
-        raise ValueDataTypeError("GEN",GEN)
-    if not (0 <= CROSS <=1):
-        raise ValueScopeError("CROSS", CROSS)
-    if not (0 <= MUT <=1):
-        raise ValueScopeError("MUT", MUT)
+    for i in [CAP, POP, GEN]:
+        if not isinstance(i, int):
+            raise Errors.ValueDataTypeError(i)
+    for i in [CROSS, MUT]:
+        if not (0 <= i <=1):
+            raise Errors.ValueScopeError(i)
     if POP < 2:
-        raise PopulationSizeError
+        raise Errors.PopulationSizeError
     pop = []
     parents = []
     for i in range(POP):
@@ -135,12 +141,16 @@ def main():
 def tui(result):
     gen = 1
     for r in result:
+        pop = r[0]
+        fits = r[1]
+        best_fit = r[2][0]
+        best_sets = r[2][1]
+        best_indices = r[2][2]
         print(f"GENETARTION {gen}")
         for i in range(POP):
-            print(f"{i+1}. {" "*(len(str(POP))-len(str(i+1)))}{r[0][i]} FITNESS={r[1][i]}")
-        print(f"\tBEST:\tFITNESS={r[2][0]}")
-        for i in range(len(r[2][2])):
-            print(f"\t{r[2][2][i]+1}. {" "*(len(str(POP))-len(str(r[2][2][i]+1)))}{r[2][1][i]}")
+            print(f"{i+1}. {" "*(len(str(POP))-len(str(i+1)))}{pop[i]} FITNESS={fits[i]}")
+        print(f"\tBEST:\tFITNESS={best_fit}")
+        for i in range(len(best_indices)):
+            print(f"\t{best_indices[i]+1}. {" "*(len(str(POP))-len(str(best_indices[i]+1)))}{best_sets[i]}")
         gen += 1
-
 tui(main())
