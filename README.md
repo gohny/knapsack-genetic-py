@@ -1,5 +1,5 @@
 # Genetic algorithm for [knapsack problem](https://en.wikipedia.org/wiki/Knapsack_problem) written in python
-Version: `1.0.2`
+Version: `1.0.3`
 ## Usage
 ### Variables
 - `ITEMS` - List of tuples containing item data (format: `({weight}, {value})`).

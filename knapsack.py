@@ -1,4 +1,4 @@
-version = "1.0.2"
+version = "1.0.3"
 
 class Errors:
     @staticmethod
@@ -87,7 +87,7 @@ def roulette (pop, fits):
     return pair
 
 def cross(p1, p2):
-    if random.random() < CROSS:
+    if random.random() <= CROSS:
         index = len(ITEMS)//2
         c1 = p1[:index] + p2[index:]
         c2 = p2[:index] + p1[index:]
@@ -97,7 +97,7 @@ def cross(p1, p2):
 
 def mutate(set):
     for i in range(len(ITEMS)):
-        if random.random() < MUT:
+        if random.random() <= MUT:
             set[i] = 1 - set[i]
     return set
 
@@ -127,12 +127,19 @@ def main():
     fits = fitness(pop)
     for i in range(GEN):
         parents.clear()
-        for j in range(int(POP/2)):
-            parents += roulette(pop, fits)
+        for j in range(POP):
+            if j%2 == 1:
+                parents += roulette(pop, fits)
+            else:
+                if j == range(POP)[-1]:
+                    parents += [roulette(pop,fits)[0]]
         pop.clear()
         for j in range(POP):
-            if j%2 == 0:
-                pop += cross(parents[j], parents[j+1])
+            if j%2 == 1:
+                pop += cross(parents[j-1], parents[j])
+            else:
+                if j == range(POP)[-1]:
+                    pop += [parents[-1]]
         for j in range(POP):
                 pop[j] = mutate(pop[j])
         fits = fitness(pop)
