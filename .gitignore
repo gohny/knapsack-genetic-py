@@ -1,6 +1,7 @@
 *.pyc
 *.pyd
 *.pyo
+*.so
 
 test.py
 

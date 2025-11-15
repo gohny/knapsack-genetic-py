@@ -1,8 +1,18 @@
+### v1.1.0
+**Release date: 2025-11-15**
+
+- Implemented TUI using `curses`.
+- Changed names of functions:  
+`main()` -> `genetic()`, `tui()` -> `main()`.
+- Added `USE_CURSES` variable.
+- Improved main functions.
+- Fixed typos.
+
 ### v1.0.3
 
 **Release date: 2025-11-10**
 
-- Implemeted odd `POP` values handling.
+- Implemented odd `POP` values handling.
 - Improved handling of crossing and mutation.
 
 ### v1.0.2

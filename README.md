@@ -1,5 +1,5 @@
 # Genetic algorithm for [knapsack problem](https://en.wikipedia.org/wiki/Knapsack_problem) written in python
-Version: `1.0.3`
+Version: `1.1.0`
 ## Usage
 ### Variables
 - `ITEMS` - List of tuples containing item data (format: `({weight}, {value})`).
@@ -8,6 +8,7 @@ Version: `1.0.3`
 - `GEN` - Amount of generations (including initial generation).
 - `CROSS` - Probability of each pair of parents crossing their genes (scope: `0-1`).
 - `MUT` - Probability of mutation of each gene (scope: `0-1`).
+- `USE_CURSES` - Display using `curses` instead of printing (`True/False`).
 
 Adjust these variables to get different results.
 ### Output
